@@ -9,6 +9,24 @@ router.get("/", function (req, res, next) {
   res.send("userjs");
 });
 
+// FOR SSN CHECKING
+router.post("/user-check", async (req, res) => {
+  const socialSecurityNumber = req.body.socialSecurityNumber;
+  const userExist = await User.findOne(
+    {
+      socialSecurityNumber,
+    },
+    (error, user) => {
+      if (error) {
+        return res.status(500).json({ error: "An error occurred" });
+      }
+      if (user) {
+        return res.status(422).json({ error: "User Already Exists" });
+      }
+    }
+  );
+});
+
 router.post("/add", async function (req, res, next) {
   const {
     firstName,
@@ -42,30 +60,32 @@ router.post("/add", async function (req, res, next) {
     return res.status(422).json({ error: "Please fill all the values" });
   }
   try {
-    const userExist = await User.findOne({ email: email });
-
-    if (userExist) {
-      return res.status(422).json({ error: "Email Already Exists" });
-    }
-
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      mobile,
-      communicationMedium,
-      address,
-      city,
-      state,
-      zipcode,
-      dob,
-      gender,
-      socialSecurityNumber,
+    const userExist = await User.findOne({
+      socialSecurityNumber: socialSecurityNumber,
     });
 
-    await user.save();
+    if (userExist) {
+      return res.status(422).json({ error: "User Already Exists" });
+    } else {
+      const user = new User({
+        firstName,
+        lastName,
+        email,
+        mobile,
+        communicationMedium,
+        address,
+        city,
+        state,
+        zipcode,
+        dob,
+        gender,
+        socialSecurityNumber,
+      });
 
-    res.status(201).json({ message: "User registered succesufully" });
+      await user.save();
+
+      res.status(201).json({ message: "User registered succesufully" });
+    }
   } catch (err) {
     console.log(err);
   }

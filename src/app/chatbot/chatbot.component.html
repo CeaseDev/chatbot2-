@@ -6,13 +6,18 @@
 >
   <div id="helpdesk">
     <button id="helpdesk-popup-button" (click)="openSupportPopup()">
-      NEED HELP?
+      🤖 NEED HELP?
     </button>
-    <div id="helpdesk-popup" [style.display]="isOpen ? 'block' : 'none'">
+    <div
+      id="helpdesk-popup"
+      [class.show]="isOpen"
+      [style.display]="isOpen ? 'block' : 'none'"
+    >
       <div id="helpdesk-popup-header">
-        Baymax
+        🤖
+        <span id="bot_name">Baymax</span>
         <button id="helpdesk-popup-close-button" (click)="openSupportPopup()">
-          Exit
+          ❌
         </button>
       </div>
       <div id="helpdesk-popup-body">
@@ -29,33 +34,30 @@
           </div>
         </div>
       </div>
-      <div>
-        <form id="helpdesk-popup-footer" [formGroup]="userForm">
-          <input
-            type="text"
-            id="input_field"
-            formControlName="userInput"
-            (keyup.enter)="processUserResponse()"
-            placeholder="Type your response..."
-          />
-          <div
-            *ngIf="
-              userForm.get('userInput')?.invalid &&
-              userForm.get('userInput')?.touched
-            "
-            class="error-message"
-          ></div>
-        </form>
-        <div id="submit_button_div">
-          <button
-            type="submit"
-            id="submit_button"
-            [disabled]="userForm.invalid"
-          >
-            Submit
-          </button>
-          <button id="clear_submit" (click)="clearChat()">Clear Chat</button>
-        </div>
+
+      <!-- <form id="helpdesk-popup-footer" [formGroup]="userForm"> -->
+      <div id="input_field_div">
+        <input
+          type="text"
+          id="input_field"
+          formControlName="userInput"
+          (keydown.enter)="handleEnterKey($event)"
+          [disabled]="finalquestion"
+          placeholder="Type your response..."
+        />
+      </div>
+
+      <div
+        *ngIf="
+          userForm.get('userInput')?.invalid &&
+          userForm.get('userInput')?.touched
+        "
+        class="error-message"
+      ></div>
+      <!-- </form> -->
+      <div id="submit_button_div">
+        <button id="submit_button" [disabled]="userForm.invalid">Submit</button>
+        <button id="clear_submit" (click)="clearChat()">Clear Chat</button>
       </div>
     </div>
   </div>

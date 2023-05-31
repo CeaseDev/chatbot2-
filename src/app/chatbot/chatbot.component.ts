@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 interface Message {
   text: string;
@@ -13,11 +13,11 @@ interface Message {
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent implements OnInit {
-  // faCoffee = faCoffee;
   isOpen = false;
   userForm!: FormGroup;
   formSubmitted: boolean = false;
   @ViewChild('scrollMe') private myScrollContainer: any;
+  finalquestion: boolean = false;
   userData: any = {
     name: '',
     ssn: '',
@@ -34,17 +34,23 @@ export class ChatbotComponent implements OnInit {
   currentQuestionIndex: number = 0;
   conversationFlow: any[] = [
     {
-      question:
-        'Hi! I am Baymax, your insurance companion. What is your First Name?',
+      question: 'Hi! I am Baymax, your insurance companion.',
+    },
+    {
+      question: 'Can you please provide your SSN?',
+      regex: /^(\d{3}-?\d{2}-?\d{4}|XXX-XX-XXXX)$/,
+    },
+    {
+      question: 'Thank you , Can i have your Email address?',
+      regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+    },
+    {
+      question: 'What is your First Name?',
       regex: /^([a-zA-Z \-\'])+[a-zA-Z]?$/,
     },
     {
       question: 'What is your Last Name?',
       regex: /^([a-zA-Z \-\'])+[a-zA-Z]?$/,
-    },
-    {
-      question: 'Can you please provide your SSN?',
-      regex: /^(\d{3}-?\d{2}-?\d{4}|XXX-XX-XXXX)$/,
     },
     {
       question: 'Your Date of Birth',
@@ -54,10 +60,7 @@ export class ChatbotComponent implements OnInit {
       question: 'Your Gender',
       regex: /^(?:m|M|male|Male|f|F|female|Female|Other|other)$/,
     },
-    {
-      question: 'Thank you , Can i have your Email address?',
-      regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-    },
+
     {
       question: 'Please provide Us with your Mobile Number ',
       regex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4}$/,
@@ -89,15 +92,31 @@ export class ChatbotComponent implements OnInit {
     this.userForm = this.formBuilder.group({
       userInput: ['', Validators.required],
     });
-
     this.askQuestion();
+    this.currentQuestionIndex++;
+    this.askQuestion();
+  }
+  handleEnterKey(event: any) {
+    event.preventDefault(); // Prevent form submission
+
+    if (event.key === 'Enter') {
+      this.processUserResponse();
+    }
   }
   clearChat(): void {
     this.messages = [];
     this.currentQuestionIndex = 0;
     this.formSubmitted = false;
-    this.userData = {};
+    if (!this.finalquestion) {
+      this.userData = {};
+    } else {
+      this.onCreateUser(this.userData);
+      this.userData = {};
+    }
+    this.validMessages = [];
     this.userForm.reset();
+    this.askQuestion();
+    this.currentQuestionIndex++;
     this.askQuestion();
   }
   askQuestion(): void {
@@ -122,14 +141,14 @@ export class ChatbotComponent implements OnInit {
         });
       } else {
         if (currentQuestion.isFinalQuestion) {
-          this.formSubmitted = true;
+          this.finalquestion = true;
           this.userData = {
-            firstName: this.validMessages[0],
-            lastName: this.validMessages[1],
-            socialSecurityNumber: this.validMessages[2],
-            dob: this.validMessages[3],
-            gender: this.validMessages[4],
-            email: this.validMessages[5],
+            socialSecurityNumber: this.validMessages[0],
+            email: this.validMessages[1],
+            firstName: this.validMessages[2],
+            lastName: this.validMessages[3],
+            dob: this.validMessages[4],
+            gender: this.validMessages[5],
             mobile: this.validMessages[6],
             state: this.validMessages[7],
             city: this.validMessages[8],
@@ -151,16 +170,18 @@ export class ChatbotComponent implements OnInit {
       this.onCreateUser(this.userData);
     }
   }
+
   openSupportPopup() {
     this.isOpen = !this.isOpen;
   }
+
   scrollToBottom() {
     setTimeout(() => {
       try {
         this.myScrollContainer.nativeElement.scrollTop =
           this.myScrollContainer.nativeElement.scrollHeight + 500;
       } catch (err) {}
-    }, 150);
+    }, 10);
   }
   onCreateUser(creationData: {
     firstName: string;
