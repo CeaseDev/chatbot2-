@@ -1,0 +1,176 @@
+<!-- chatbot.component.html -->
+<form
+  [formGroup]="userForm"
+  (ngSubmit)="processUserResponse()"
+  *ngIf="!formSubmitted"
+>
+  <div id="helpdesk">
+    <button id="helpdesk-popup-button" (click)="openSupportPopup()">
+      NEED HELP?
+    </button>
+    <div id="helpdesk-popup" [style.display]="isOpen ? 'block' : 'none'">
+      <div id="helpdesk-popup-header">
+        Baymax
+        <button id="helpdesk-popup-close-button" (click)="openSupportPopup()">
+          Exit
+        </button>
+      </div>
+      <div id="helpdesk-popup-body">
+        <div class="messages" #scrollMe>
+          <div *ngFor="let message of messages" class="message">
+            <div
+              [ngClass]="{
+                'user-message': message.isUser,
+                'bot-message': !message.isUser
+              }"
+            >
+              {{ message.text }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <form id="helpdesk-popup-footer" [formGroup]="userForm">
+          <input
+            type="text"
+            id="input_field"
+            formControlName="userInput"
+            (keyup.enter)="processUserResponse()"
+            placeholder="Type your response..."
+          />
+          <div
+            *ngIf="
+              userForm.get('userInput')?.invalid &&
+              userForm.get('userInput')?.touched
+            "
+            class="error-message"
+          ></div>
+        </form>
+        <div id="submit_button_div">
+          <button
+            type="submit"
+            id="submit_button"
+            [disabled]="userForm.invalid"
+          >
+            Submit
+          </button>
+          <button id="clear_submit" (click)="clearChat()">Clear Chat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!--   
+  <div *ngIf="formSubmitted">
+    <h3>Form submitted successfully!</h3>
+    <p>Name: {{ userData.name }}</p>
+    <p>Email: {{ userData.email }}</p>
+    <p>Mobile Number: {{ userData.mobileNumber }}</p>
+    <p>Address: {{ userData.address }}</p>
+  </div>
+   -->
+
+<!-- <ul class="chat-list">
+    <li *ngFor="let message of messages" class="mess">
+      <span
+        [ngClass]="{
+          'user-message': message.isUser,
+          'bot-message': !message.isUser
+        }"
+      >
+        {{ message.text }}
+      </span>
+    </li>
+  </ul> -->
+<!-- <form
+  [formGroup]="userForm"
+  (ngSubmit)="processUserResponse()"
+  *ngIf="!formSubmitted"
+> -->
+<!-- <div class="chat-container">
+    <ul class="chat-list">
+      <li *ngFor="let message of messages">
+        <span
+          [ngClass]="{
+            'user-message': message.isUser,
+            'bot-message': !message.isUser
+          }"
+        >
+          {{ message.text }}
+        </span>
+      </li>
+    </ul>
+
+    <input
+      type="text"
+      formControlName="userInput"
+      (keyup.enter)="processUserResponse()"
+      placeholder="Type your response..."
+    />
+    <div
+      *ngIf="
+        userForm.get('userInput')?.invalid && userForm.get('userInput')?.touched
+      "
+      class="error-message"
+    ></div>
+
+    <button type="submit" [disabled]="userForm.invalid">Submit</button>
+  </div> -->
+
+<!-- <form
+  [formGroup]="userForm"
+  (ngSubmit)="processUserResponse()"
+  *ngIf="!formSubmitted"
+>
+  <div id="helpdesk">
+    <button id="helpdesk-popup-button" (click)="openSupportPopup()">
+      NEED HELP?
+    </button>
+    <div id="helpdesk-popup" [style.display]="isOpen ? 'block' : 'none'">
+      <div id="helpdesk-popup-header">
+        Baymax
+        <button id="helpdesk-popup-close-button" (click)="openSupportPopup()">
+          Exit
+        </button>
+      </div>
+      <div id="helpdesk-popup-body">
+        <div class="messages" #scrollMe>
+          <div *ngFor="let message of messages" class="message">
+            <div
+              [ngClass]="{
+                'user-message': message.isUser,
+                'bot-message': !message.isUser
+              }"
+            >
+              {{ message.text }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <form id="helpdesk-popup-footer" [formGroup]="userForm">
+          <input
+            type="text"
+            formControlName="userInput"
+            (keyup.enter)="processUserResponse()"
+            placeholder="Type your response..."
+          />
+          <div
+            *ngIf="
+              userForm.get('userInput')?.invalid &&
+              userForm.get('userInput')?.touched
+            "
+            class="error-message"
+          ></div>
+        </form>
+        <button
+          type="submit"
+          class="submit_button"
+          [disabled]="userForm.invalid"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</form> -->
